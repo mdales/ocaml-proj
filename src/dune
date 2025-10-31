@@ -1,0 +1,4 @@
+(library
+  (name proj)
+  (public_name proj)
+  (libraries proj.c))
