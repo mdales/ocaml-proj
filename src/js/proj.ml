@@ -7,7 +7,7 @@ type ctx = unit
 let ctx () = ()
 
 module Transformation = struct
-  type t = Jv.t 
+  type t = Jv.t
 
   let normalize_for_visualization ?ctx:_ v = v
 end
@@ -26,7 +26,7 @@ module Coord = struct
     Jv.Jarray.set arr 1 (Jv.of_float y);
     Jv.Jarray.set arr 2 (Jv.of_float z);
     Jv.Jarray.set arr 3 (Jv.of_float t);
-    Jv.call proj4 "toPoint" [| arr |] 
+    Jv.call proj4 "toPoint" [| arr |]
 
   let v jv =
     let x = Jv.Float.get jv "x" in
@@ -41,11 +41,11 @@ end
 
 type direction = Forward | Inverse | Ident
 
-let transform ?(direction=Forward) transform coord1 =
-  let func = match direction with
+let transform ?(direction = Forward) transform coord1 =
+  let func =
+    match direction with
     | Forward -> "forward"
     | Inverse -> "inverse"
     | Ident -> assert false
   in
   Jv.call transform func [| coord1 |]
-

@@ -2,11 +2,11 @@
    Copyright (c) 2024 The ocaml-proj programmers. All rights reserved.
    SPDX-License-Identifier: ISC
   ---------------------------------------------------------------------------*)
-type ctx 
+type ctx
 
-val ctx : unit -> ctx 
-(** Create a new PROJ context. Note that unless multiple threads are
-    involved, you shouldn't need to pass in this context. *)
+val ctx : unit -> ctx
+(** Create a new PROJ context. Note that unless multiple threads are involved,
+    you shouldn't need to pass in this context. *)
 
 module Transformation : sig
   type t
@@ -20,14 +20,15 @@ end
 type area
 (** A Proj area *)
 
-val crs_to_crs : ?area:area -> ?ctx:ctx -> src:string -> string -> Transformation.t
+val crs_to_crs :
+  ?area:area -> ?ctx:ctx -> src:string -> string -> Transformation.t
 (** Create a transformation object from [src] to [tgt] *)
 
 module Coord : sig
   type t
   (** A proj coordinate object *)
 
-  val make : x:float -> y:float -> z:float -> t:float -> t 
+  val make : x:float -> y:float -> z:float -> t:float -> t
   (** Make a new coordinate using [xyzt] *)
 
   val v : t -> float array
@@ -40,9 +41,11 @@ module Coord : sig
   (** [y t] is [Array.get (v t) 1] *)
 end
 
-type direction = Forward | Inverse | Ident
-(** The direction to apply a {! transform} *)
+type direction =
+  | Forward
+  | Inverse
+  | Ident  (** The direction to apply a {! transform} *)
 
 val transform : ?direction:direction -> Transformation.t -> Coord.t -> Coord.t
-(** [transform ?direction trans c] uses [trans] to transform [c]. You can optionally
-    use the [direction] argument to invert the transformation. *)
+(** [transform ?direction trans c] uses [trans] to transform [c]. You can
+    optionally use the [direction] argument to invert the transformation. *)
