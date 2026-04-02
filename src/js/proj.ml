@@ -42,10 +42,7 @@ end
 type direction = Forward | Inverse | Ident
 
 let transform ?(direction = Forward) transform coord1 =
-  let func =
-    match direction with
-    | Forward -> "forward"
-    | Inverse -> "inverse"
-    | Ident -> assert false
-  in
-  Jv.call transform func [| coord1 |]
+  match direction with
+  | Forward -> Jv.call transform "forward" [| coord1 |]
+  | Inverse -> Jv.call transform "inverse" [| coord1 |]
+  | Ident -> coord1
