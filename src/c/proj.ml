@@ -1,7 +1,7 @@
 open Ctypes 
 
-module Types = Proj_c.C.Functions.T
-module Funs = Proj_c.C.Functions
+module Types = C.Functions.T
+module Funs = C.Functions
 
 type ctx = Types.context structure ptr
 
@@ -34,10 +34,10 @@ module Coord = struct
   let make ~x ~y ~z ~t =
     Funs.proj_coord x y z t
 
-  let v coord = Types.v coord 
+  let v coord = Types.v coord |> CArray.to_list |> Array.of_list 
 
-  let x coord = CArray.get (v coord) 0
-  let y coord = CArray.get (v coord) 1
+  let x coord = Array.get (v coord) 0
+  let y coord = Array.get (v coord) 1
 end
 
 let crs_to_crs ?area ?(ctx=null_ctx) ~src tgt =

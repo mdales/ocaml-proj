@@ -1,11 +1,13 @@
 (library
  (name proj_c)
- (libraries nx ctypes)
  (public_name proj.c)
+ (implements proj)
+ (libraries proj ctypes)
  (ctypes
   (external_library_name proj)
   (build_flags_resolver pkg_config)
-  (headers (include "proj.h"))
+  (headers
+   (include "proj.h"))
   (type_description
    (instance Types)
    (functor Type_description))

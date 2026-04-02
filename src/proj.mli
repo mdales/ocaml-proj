@@ -30,14 +30,14 @@ module Coord : sig
   val make : x:float -> y:float -> z:float -> t:float -> t 
   (** Make a new coordinate using [xyzt] *)
 
-  val v : t -> float Ctypes.carray
-  (** The values of the coordinate as a Ctypes array *)
+  val v : t -> float array
+  (** The values of the coordinate as an array *)
 
   val x : t -> float
-  (** [x t] is [CArray.get (v t) 0] *)
+  (** [x t] is [Array.get (v t) 0] *)
 
   val y : t -> float
-  (** [y t] is [CArray.get (v t) 1] *)
+  (** [y t] is [Array.get (v t) 1] *)
 end
 
 type direction = Forward | Inverse | Ident
