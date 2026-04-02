@@ -1,6 +1,7 @@
 (library
  (name proj_c)
  (public_name proj.c)
+ (optional)
  (implements proj)
  (libraries proj ctypes)
  (ctypes

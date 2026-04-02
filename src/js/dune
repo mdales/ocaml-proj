@@ -1,5 +1,6 @@
 (library
  (name proj_js)
+ (optional)
  (public_name proj.js)
  (implements proj)
  (libraries brr))

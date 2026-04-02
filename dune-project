@@ -6,22 +6,24 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github geocaml/ocaml-proj))
 
-(authors "Author Name <author@example.com>")
+(authors "Patrick Ferris <patrick@sirref.org>")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "Patrick Ferris <patrick@sirref.org>")
 
-(license LICENSE)
-
-(documentation https://url/to/documentation)
+(license ISC)
 
 (package
  (name proj)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml)
+ (synopsis "Bindings to PROJ4")
+ (description "C and Javascript OCaml bindings to the geospatial projection library PROJ4")
+ (depends
+   ocaml
+   (ctypes :with-test)
+   (brr :with-test)
+ )
  (tags
-  ("add topics" "to describe" your project)))
+  ("org:geocaml" "geospatial" "projections")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
