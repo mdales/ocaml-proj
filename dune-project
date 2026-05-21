@@ -17,11 +17,10 @@
 (package
  (name proj)
  (synopsis "Bindings to PROJ4")
- (description "C and Javascript OCaml bindings to the geospatial projection library PROJ4")
+ (description "C OCaml bindings to the geospatial projection library PROJ4")
  (depends
    ocaml
    (ctypes :with-test)
-   (brr :with-test)
  )
  (tags
   ("org:geocaml" "geospatial" "projections")))
