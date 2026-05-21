@@ -12,8 +12,9 @@ bug-reports: "https://github.com/geocaml/ocaml-proj/issues"
 depends: [
   "dune" {>= "3.19"}
   "ocaml"
-  "ctypes" {with-test}
+  "ctypes"
   "brr" {with-test}
+  "alcotest" {with-test}
   "odoc" {with-doc}
 ]
 build: [

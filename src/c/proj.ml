@@ -53,6 +53,22 @@ let wkt_to_crs ?(ctx = null_ctx) ?(options = []) wkt =
   if Ctypes.is_null crs then check_and_raise_error ctx
   else finalize_proj_objects crs
 
+let identify ?(ctx = null_ctx) c auth_name =
+  let null_options = Ctypes.coerce (ptr void) ((ptr (ptr char))) null in
+  let confidences_ptr = allocate (ptr int) (from_voidp int null) in
+  let results = Funs.proj_identify ctx c auth_name null_options confidences_ptr in
+  let count = Funs.proj_list_get_count results in
+  let confidences =  !@ confidences_ptr in
+  let ocaml_res = List.init count (fun idx ->
+    let obj = Funs.proj_list_get ctx results idx in
+    let code = Funs.proj_get_id_code obj 0 in
+    let confidence = !@ (confidences +@ idx) in
+    code, confidence
+  ) in
+  Funs.proj_list_destroy results;
+  Funs.proj_int_list_destroy confidences;
+  ocaml_res
+
 type direction = Types.direction = Forward | Inverse | Ident
 
 let transform ?(direction = Types.Forward) t c = Funs.proj_trans t direction c
