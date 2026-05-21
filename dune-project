@@ -20,7 +20,8 @@
  (description "C OCaml bindings to the geospatial projection library PROJ4")
  (depends
    ocaml
-   (ctypes :with-test)
+   ctypes
+   (alcotest :with-test)
  )
  (tags
   ("org:geocaml" "geospatial" "projections")))

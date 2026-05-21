@@ -5,6 +5,10 @@ module Types (F : Ctypes.TYPE) = struct
 
   let pj_obj : obj structure typ = structure "PJconsts"
 
+  type obj_list
+
+  let pj_obj_list : obj_list structure typ = structure "PJ_OBJ_LIST"
+
   type context
 
   let pj_ctx : context structure typ = structure "pj_ctx"

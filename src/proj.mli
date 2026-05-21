@@ -26,6 +26,8 @@ val crs_to_crs :
 
 val wkt_to_crs : ?ctx:ctx -> ?options:string list -> string -> Transformation.t
 
+val identify : ?ctx:ctx -> Transformation.t -> string -> (string * int) list
+
 module Coord : sig
   type t
   (** A proj coordinate object *)
