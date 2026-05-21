@@ -20,6 +20,9 @@ module Functions (F : Ctypes.FOREIGN) = struct
   let proj_destroy =
     foreign "proj_destroy" (ptr T.pj_obj @-> returning @@ ptr T.pj_obj)
 
+  let proj_create_from_wkt =
+    foreign "proj_create_from_wkt" (ptr T.pj_ctx @-> string @->  (ptr (const (ptr (const (char))))) @-> ptr (ptr (ptr char)) @-> ptr (ptr (ptr char)) @-> returning @@ ptr T.pj_obj)
+
   let proj_create_crs_to_crs =
     foreign "proj_create_crs_to_crs"
       (ptr T.pj_ctx @-> string @-> string @-> ptr T.pj_area @-> returning

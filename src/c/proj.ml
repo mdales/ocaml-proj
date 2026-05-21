@@ -44,6 +44,15 @@ let crs_to_crs ?area ?(ctx = null_ctx) ~src tgt =
   if Ctypes.is_null crs then check_and_raise_error ctx
   else finalize_proj_objects crs
 
+let wkt_to_crs ?(ctx = null_ctx) ?(options = []) wkt =
+  let array = CArray.of_list string options in
+  let options_ptr = CArray.start array in
+  let cast_options_ptr = Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr in
+  let extras_null = Ctypes.coerce (ptr void) (ptr (ptr (ptr char))) null in
+  let crs = Funs.proj_create_from_wkt ctx wkt cast_options_ptr extras_null extras_null in
+  if Ctypes.is_null crs then check_and_raise_error ctx
+  else finalize_proj_objects crs
+
 type direction = Types.direction = Forward | Inverse | Ident
 
 let transform ?(direction = Types.Forward) t c = Funs.proj_trans t direction c

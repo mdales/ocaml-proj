@@ -24,6 +24,8 @@ val crs_to_crs :
   ?area:area -> ?ctx:ctx -> src:string -> string -> Transformation.t
 (** Create a transformation object from [src] to [tgt] *)
 
+val wkt_to_crs : ?ctx:ctx -> ?options:string list -> string -> Transformation.t
+
 module Coord : sig
   type t
   (** A proj coordinate object *)
