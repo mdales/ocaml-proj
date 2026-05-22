@@ -7,11 +7,21 @@ let test_invalid_create () =
 
 
 let test_create_with_epsg () =
-    ignore(Proj.CRS.v "epsg:4326")
+    let crs = Proj.CRS.v "epsg:4326" in
+    Alcotest.(check (option string)) "check auth name" (Some "EPSG") (Proj.CRS.id_auth_name crs 0);
+    Alcotest.(check (option string)) "check id" (Some "4326") (Proj.CRS.id_code crs 0)
 
 
 let test_create_with_name () =
-    ignore(Proj.CRS.v "WGS 84")
+    let crs = Proj.CRS.v "WGS 84" in
+    Alcotest.(check (option string)) "check auth name" (Some "EPSG") (Proj.CRS.id_auth_name crs 0);
+    Alcotest.(check (option string)) "check id" (Some "4326") (Proj.CRS.id_code crs 0)
+
+
+let test_get_invalid_auth_name_index () =
+    let crs = Proj.CRS.v "WGS 84" in
+    Alcotest.(check (option string)) "check auth name" None (Proj.CRS.id_auth_name crs 42);
+    Alcotest.(check (option string)) "check id" None (Proj.CRS.id_code crs 42)
 
 
 let test_create_with_wkt () =
@@ -21,7 +31,7 @@ let test_create_with_wkt () =
 
 let test_invalid_wkt () =
     let wkt = "Hello, world!" in
-    Alcotest.check_raises "Garbage wkt" (Failure "Invalid PROJ string syntax") (fun () ->
+    Alcotest.check_raises "Garbage wkt" (Failure "Unknown error (code 4096)") (fun () ->
         let _ = Proj.CRS.of_wkt wkt in ()
     )
 
@@ -57,6 +67,7 @@ let () =
             Alcotest.test_case "create with epsg" `Quick test_create_with_epsg;
             Alcotest.test_case "create with wkt" `Quick test_create_with_wkt;
             Alcotest.test_case "create with name" `Quick test_create_with_name;
+            Alcotest.test_case "invalid index for auth name" `Quick test_get_invalid_auth_name_index;
             Alcotest.test_case "invalid WKT" `Quick test_invalid_wkt;
             Alcotest.test_case "identify epsg:3006" `Quick test_idenfity_epsg_3006;
             Alcotest.test_case "identify esri:53009" `Quick test_idenfity_esri_53009;

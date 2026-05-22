@@ -25,8 +25,14 @@ module CRS : sig
   (** Attempt to identify a CRS as belonging to a particular naming authority.
   Returns a list of names and confidence values. *)
 
-  val name : t -> string
+  val name : t -> string option
   (** Get a human readable name for the CRS *)
+
+  val id_code : t -> int -> string option
+  (** Get the code identifier *)
+
+  val id_auth_name : t -> int -> string option
+  (** Get the authority name *)
 end
 
 module Coord : sig
