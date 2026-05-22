@@ -7,10 +7,16 @@ type ctx = Types.context structure ptr
 let null_ctx = Ctypes.coerce (ptr void) (ptr Types.pj_ctx) null
 let ctx = Funs.proj_context_create
 
-let check_and_raise_error ctx =
-  let res = Funs.proj_context_errno ctx in
-  let s = Funs.proj_context_errno_string ctx res in
-  failwith s
+let check_and_raise_error_with_context ctx =
+  (** We need to check that there was actually an error, as calling errno_string with
+  errno 0 I have observed crashes in PROJ, which means we get no sensible error state in
+  the OCaml side of things, just termination. *)
+  match Funs.proj_context_errno ctx with
+  | 0 -> failwith "This is not an error - NULL was probably allowed"
+  | err -> (
+    let s = Funs.proj_context_errno_string ctx err in
+    failwith s
+  )
 
 let finalize_proj_objects o =
   Gc.finalise (fun obj -> ignore (Funs.proj_destroy obj)) o;
@@ -21,7 +27,7 @@ module CRS = struct
 
   let v ?(ctx = null_ctx) definition =
     let crs = Funs.proj_create ctx definition in
-    if Ctypes.is_null crs then check_and_raise_error ctx
+    if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
 
   let of_wkt ?(options = []) ?(ctx = null_ctx) wkt =
@@ -30,8 +36,41 @@ module CRS = struct
     let cast_options_ptr = Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr in
     let extras_null = Ctypes.coerce (ptr void) (ptr (ptr (ptr char))) null in
     let crs = Funs.proj_create_from_wkt ctx wkt cast_options_ptr extras_null extras_null in
-    if Ctypes.is_null crs then check_and_raise_error ctx
+    if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
+
+    let name t =
+      ignore(Funs.proj_errno_reset t);
+      let p = Funs.proj_get_name t in
+      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+      if Ctypes.is_null p then (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err)
+      )
+      else Some (coerce (ptr (const char)) string p)
+
+    let id_code t idx =
+      ignore(Funs.proj_errno_reset t);
+      let p = Funs.proj_get_id_code t idx in
+      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+      if Ctypes.is_null p then (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err)
+      )
+      else Some (coerce (ptr (const char)) string p)
+
+    let id_auth_name t idx =
+      ignore(Funs.proj_errno_reset t);
+      let p = Funs.proj_get_id_auth_name t idx in
+      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+      if Ctypes.is_null p then (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err)
+      )
+      else Some (coerce (ptr (const char)) string p)
 
   let identify ?(ctx = null_ctx) t auth_name =
     let null_options = Ctypes.coerce (ptr void) ((ptr (ptr char))) null in
@@ -41,16 +80,13 @@ module CRS = struct
     let confidences =  !@ confidences_ptr in
     let ocaml_res = List.init count (fun idx ->
       let obj = Funs.proj_list_get ctx results idx in
-      let code = Funs.proj_get_id_code obj 0 in
+      let code = Option.get (id_code obj 0) in
       let confidence = !@ (confidences +@ idx) in
       code, confidence
     ) in
     Funs.proj_list_destroy results;
     Funs.proj_int_list_destroy confidences;
     ocaml_res
-
-  let name t =
-    Funs.proj_get_name t
 
 end
 
@@ -75,7 +111,7 @@ module Transformation = struct
       | None -> Ctypes.coerce (ptr void) (ptr Types.pj_area) null
     in
     let crs = Funs.proj_create_crs_to_crs ctx src tgt area in
-    if Ctypes.is_null crs then check_and_raise_error ctx
+    if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
 
   let of_crs ?area ?(options = []) ?(ctx = null_ctx) ~src tgt =
@@ -88,9 +124,8 @@ module Transformation = struct
     let options_ptr = CArray.start array in
     let cast_options_ptr = Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr in
     let crs = Funs.proj_create_crs_to_crs_from_pj ctx src tgt area cast_options_ptr in
-    if Ctypes.is_null crs then check_and_raise_error ctx
+    if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
-
 
   let normalize_for_visualization ?(ctx = null_ctx) t =
     Funs.proj_normalize_for_visualization ctx t

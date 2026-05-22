@@ -5,8 +5,17 @@ module Functions (F : Ctypes.FOREIGN) = struct
   module T = Types_generated
 
   (* Errors *)
+  let proj_errno_reset =
+    foreign "proj_errno_reset" (ptr T.pj_obj @-> returning int)
+
+  let proj_errno =
+    foreign "proj_errno" (ptr T.pj_obj @-> returning int)
+
   let proj_context_errno =
     foreign "proj_context_errno" (ptr T.pj_ctx @-> returning int)
+
+  let proj_errno_string =
+    foreign "proj_errno_string" (int @-> returning string)
 
   let proj_context_errno_string =
     foreign "proj_context_errno_string"
@@ -33,13 +42,13 @@ module Functions (F : Ctypes.FOREIGN) = struct
     foreign "proj_int_list_destroy" (ptr int @-> returning @@ void)
 
   let proj_get_id_auth_name =
-    foreign "proj_get_id_auth_name" (ptr T.pj_obj @-> int @-> returning @@ string)
+    foreign "proj_get_id_auth_name" (ptr T.pj_obj @-> int @-> returning @@ ptr char)
 
   let proj_get_id_code =
-    foreign "proj_get_id_code" (ptr T.pj_obj @-> int @-> returning @@ string)
+    foreign "proj_get_id_code" (ptr T.pj_obj @-> int @-> returning @@ ptr char)
 
   let proj_get_name =
-    foreign "proj_get_name" (ptr T.pj_obj @-> returning @@ string)
+    foreign "proj_get_name" (ptr T.pj_obj @-> returning @@ ptr char)
 
   let proj_create =
     foreign "proj_create" (ptr T.pj_ctx @-> string @-> returning @@ ptr T.pj_obj)
