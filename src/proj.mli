@@ -8,25 +8,26 @@ val ctx : unit -> ctx
 (** Create a new PROJ context. Note that unless multiple threads are involved,
     you shouldn't need to pass in this context. *)
 
-module Transformation : sig
-  type t
-  (** A transformation object *)
-
-  val normalize_for_visualization : ?ctx:ctx -> t -> t
-  (** This will change the given {! t} into one whose axis order is the one
-      expected for visualization purposes. *)
-end
-
 type area
 (** A Proj area *)
 
-val crs_to_crs :
-  ?area:area -> ?ctx:ctx -> src:string -> string -> Transformation.t
-(** Create a transformation object from [src] to [tgt] *)
+module CRS : sig
+  type t
+  (** A CRS object *)
 
-val wkt_to_crs : ?ctx:ctx -> ?options:string list -> string -> Transformation.t
+  val v : ?ctx:ctx -> string -> t
+  (** Create a CRS object from a string definition *)
 
-val identify : ?ctx:ctx -> Transformation.t -> string -> (string * int) list
+  val of_wkt :  ?options:string list -> ?ctx:ctx ->string -> t
+  (** Create a CRS object from a WKT string *)
+
+  val identify : ?ctx:ctx -> t -> string -> (string * int) list
+  (** Attempt to identify a CRS as belonging to a particular naming authority.
+  Returns a list of names and confidence values. *)
+
+  val name : t -> string
+  (** Get a human readable name for the CRS *)
+end
 
 module Coord : sig
   type t
@@ -50,6 +51,21 @@ type direction =
   | Inverse
   | Ident  (** The direction to apply a {! transform} *)
 
-val transform : ?direction:direction -> Transformation.t -> Coord.t -> Coord.t
-(** [transform ?direction trans c] uses [trans] to transform [c]. You can
-    optionally use the [direction] argument to invert the transformation. *)
+module Transformation : sig
+  type t
+  (** A transformation object *)
+
+  val of_string :  ?area:area -> ?ctx:ctx -> src:string -> string -> t
+  (** Create a transformation object from [src] to [tgt] using strings *)
+
+  val of_crs :  ?area:area -> ?options:string list -> ?ctx:ctx -> src:CRS.t -> CRS.t -> t
+  (** Create a transformation object from [src] to [tgt] using CRS.t values *)
+
+  val normalize_for_visualization : ?ctx:ctx -> t -> t
+  (** This will change the given {! t} into one whose axis order is the one
+      expected for visualization purposes. *)
+
+  val transform : ?direction:direction -> t -> Coord.t -> Coord.t
+  (** [transform ?direction trans c] uses [trans] to transform [c]. You can
+      optionally use the [direction] argument to invert the transformation. *)
+end
