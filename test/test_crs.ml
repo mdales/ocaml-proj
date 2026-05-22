@@ -2,31 +2,31 @@
 let test_invalid_create () =
     let def = "Hello, world!" in
     Alcotest.check_raises "Garbage definition" (Failure "Invalid PROJ string syntax") (fun () ->
-        let _ = Proj.CRS.v def in ()
+        let _ = Proj.CRS.of_string def in ()
     )
 
 
 let test_create_with_epsg () =
-    let crs = Proj.CRS.v "epsg:4326" in
+    let crs = Proj.CRS.of_string "epsg:4326" in
     Alcotest.(check (option string)) "check auth name" (Some "EPSG") (Proj.CRS.id_auth_name crs 0);
     Alcotest.(check (option string)) "check id" (Some "4326") (Proj.CRS.id_code crs 0)
 
 
 let test_create_with_name () =
-    let crs = Proj.CRS.v "WGS 84" in
+    let crs = Proj.CRS.of_string "WGS 84" in
     Alcotest.(check (option string)) "check auth name" (Some "EPSG") (Proj.CRS.id_auth_name crs 0);
     Alcotest.(check (option string)) "check id" (Some "4326") (Proj.CRS.id_code crs 0)
 
 
 let test_get_invalid_auth_name_index () =
-    let crs = Proj.CRS.v "WGS 84" in
+    let crs = Proj.CRS.of_string "WGS 84" in
     Alcotest.(check (option string)) "check auth name" None (Proj.CRS.id_auth_name crs 42);
     Alcotest.(check (option string)) "check id" None (Proj.CRS.id_code crs 42)
 
 
 let test_create_with_wkt () =
     let wkt = {|PROJCS["ETRS89-SWE [SWEREF 99 TM]",GEOGCS["ETRS89-SWE [SWEREF 99]",DATUM["SWEREF_99",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6619"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4619"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",15],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Northing",NORTH],AXIS["Easting",EAST],AUTHORITY["EPSG","3006"]]|} in
-    ignore(Proj.CRS.v wkt)
+    ignore(Proj.CRS.of_string wkt)
 
 
 let test_invalid_wkt () =
