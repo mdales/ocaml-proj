@@ -8,7 +8,7 @@ let null_ctx = Ctypes.coerce (ptr void) (ptr Types.pj_ctx) null
 let ctx = Funs.proj_context_create
 
 let check_and_raise_error_with_context ctx =
-  (** We need to check that there was actually an error, as calling errno_string with
+  (* We need to check that there was actually an error, as calling errno_string with
   errno 0 I have observed crashes in PROJ, which means we get no sensible error state in
   the OCaml side of things, just termination. *)
   match Funs.proj_context_errno ctx with
