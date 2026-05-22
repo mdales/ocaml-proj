@@ -25,7 +25,7 @@ let finalize_proj_objects o =
 module CRS = struct
   type t = Types.obj structure ptr
 
-  let v ?(ctx = null_ctx) definition =
+  let of_string ?(ctx = null_ctx) definition =
     let crs = Funs.proj_create ctx definition in
     if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs

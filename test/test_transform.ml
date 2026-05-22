@@ -14,8 +14,8 @@ let test_create_from_string_invalid_target () =
     )
 
 let test_create_from_crs () =
-    let src = Proj.CRS.v "epsg:4326"
-    and tgt = Proj.CRS.v "epsg:3006" in
+    let src = Proj.CRS.of_string "epsg:4326"
+    and tgt = Proj.CRS.of_string "epsg:3006" in
     ignore (Proj.Transformation.of_crs ~src tgt)
 
 let test_inverse_round_trip_transform () =

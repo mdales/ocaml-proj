@@ -15,8 +15,8 @@ module CRS : sig
   type t
   (** A CRS object *)
 
-  val v : ?ctx:ctx -> string -> t
-  (** Create a CRS object from a string definition *)
+  val of_string : ?ctx:ctx -> string -> t
+  (** Create a CRS object from a general string definition *)
 
   val of_wkt :  ?options:string list -> ?ctx:ctx ->string -> t
   (** Create a CRS object from a WKT string *)
