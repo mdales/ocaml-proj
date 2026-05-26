@@ -7,6 +7,10 @@ type ctx = Types.context structure ptr
 let null_ctx = Ctypes.coerce (ptr void) (ptr Types.pj_ctx) null
 let ctx = Funs.proj_context_create
 
+let reset_errno t =
+  let _ : int = Funs.proj_errno_reset t in
+  ()
+
 let check_and_raise_error_with_context ctx =
   (* We need to check that there was actually an error, as calling errno_string with
   errno 0 I have observed crashes in PROJ, which means we get no sensible error state in
@@ -43,34 +47,31 @@ module CRS = struct
     else finalize_proj_objects crs
 
   let name t =
-    ignore (Funs.proj_errno_reset t);
-    let p = Funs.proj_get_name t in
-    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-    if Ctypes.is_null p then
-      match Funs.proj_errno t with
-      | 0 -> None
-      | err -> failwith (Funs.proj_errno_string err)
-    else Some (coerce (ptr (const char)) string p)
+    reset_errno t;
+    match Funs.proj_get_name t with
+    | None -> (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err))
+    | Some _ as s -> s
 
   let id_code t idx =
-    ignore (Funs.proj_errno_reset t);
-    let p = Funs.proj_get_id_code t idx in
-    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-    if Ctypes.is_null p then
-      match Funs.proj_errno t with
-      | 0 -> None
-      | err -> failwith (Funs.proj_errno_string err)
-    else Some (coerce (ptr (const char)) string p)
+    reset_errno t;
+    match Funs.proj_get_id_code t idx with
+    | Some _ as s -> s
+    | None -> (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err))
 
   let id_auth_name t idx =
-    ignore (Funs.proj_errno_reset t);
-    let p = Funs.proj_get_id_auth_name t idx in
-    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-    if Ctypes.is_null p then
-      match Funs.proj_errno t with
-      | 0 -> None
-      | err -> failwith (Funs.proj_errno_string err)
-    else Some (coerce (ptr (const char)) string p)
+    reset_errno t;
+    match Funs.proj_get_id_auth_name t idx with
+    | Some _ as s -> s
+    | None -> (
+        match Funs.proj_errno t with
+        | 0 -> None
+        | err -> failwith (Funs.proj_errno_string err))
 
   let identify ?(ctx = null_ctx) t auth_name =
     let null_options = Ctypes.coerce (ptr void) (ptr (ptr char)) null in

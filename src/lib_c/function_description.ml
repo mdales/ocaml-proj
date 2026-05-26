@@ -42,13 +42,13 @@ module Functions (F : Ctypes.FOREIGN) = struct
 
   let proj_get_id_auth_name =
     foreign "proj_get_id_auth_name"
-      (ptr T.pj_obj @-> int @-> returning @@ ptr char)
+      (ptr T.pj_obj @-> int @-> returning @@ string_opt)
 
   let proj_get_id_code =
-    foreign "proj_get_id_code" (ptr T.pj_obj @-> int @-> returning @@ ptr char)
+    foreign "proj_get_id_code" (ptr T.pj_obj @-> int @-> returning @@ string_opt)
 
   let proj_get_name =
-    foreign "proj_get_name" (ptr T.pj_obj @-> returning @@ ptr char)
+    foreign "proj_get_name" (ptr T.pj_obj @-> returning @@ string_opt)
 
   let proj_create =
     foreign "proj_create" (ptr T.pj_ctx @-> string @-> returning @@ ptr T.pj_obj)
