@@ -6,16 +6,38 @@ type ctx = unit
 
 let ctx () = ()
 
+module CRS = struct
+  type t = Jv.t
+
+  let of_string ?ctx:_ s = Jv.new' proj4 [| Jv.of_string s |]
+  let of_wkt ?options:_ ?ctx:_ s = Jv.new' proj4 [| Jv.of_string s |]
+
+  let name v =
+    let oproj = Jv.get v "oProj" in
+    let name = Jv.find oproj "name" in
+    Option.map Jv.to_string name
+end
+
+type direction = Forward | Inverse | Ident
+
 module Transformation = struct
   type t = Jv.t
 
   let normalize_for_visualization ?ctx:_ v = v
+
+  let of_string ?area:_ ?ctx:_ ~src dst =
+    Jv.new' proj4 [| Jv.of_string src; Jv.of_string dst |]
+
+  let of_crs ?area:_ ?options:_ ?ctx:_ ~src dst = Jv.new' proj4 [| src; dst |]
+
+  let transform ?(direction = Forward) transform coord1 =
+    match direction with
+    | Forward -> Jv.call transform "forward" [| coord1 |]
+    | Inverse -> Jv.call transform "inverse" [| coord1 |]
+    | Ident -> coord1
 end
 
 type area = unit
-
-let crs_to_crs ?area:_ ?ctx:_ ~src dst =
-  Jv.new' proj4 [| Jv.of_string src; Jv.of_string dst |]
 
 module Coord = struct
   type t = Jv.t
@@ -39,10 +61,3 @@ module Coord = struct
   let y jv = Jv.Float.get jv "y"
 end
 
-type direction = Forward | Inverse | Ident
-
-let transform ?(direction = Forward) transform coord1 =
-  match direction with
-  | Forward -> Jv.call transform "forward" [| coord1 |]
-  | Inverse -> Jv.call transform "inverse" [| coord1 |]
-  | Ident -> coord1
