@@ -18,12 +18,12 @@ module CRS : sig
   val of_string : ?ctx:ctx -> string -> t
   (** Create a CRS object from a general string definition *)
 
-  val of_wkt :  ?options:string list -> ?ctx:ctx ->string -> t
+  val of_wkt : ?options:string list -> ?ctx:ctx -> string -> t
   (** Create a CRS object from a WKT string *)
 
   val identify : ?ctx:ctx -> t -> string -> (string * int) list
   (** Attempt to identify a CRS as belonging to a particular naming authority.
-  Returns a list of names and confidence values. *)
+      Returns a list of names and confidence values. *)
 
   val name : t -> string option
   (** Get a human readable name for the CRS *)
@@ -61,10 +61,11 @@ module Transformation : sig
   type t
   (** A transformation object *)
 
-  val of_string :  ?area:area -> ?ctx:ctx -> src:string -> string -> t
+  val of_string : ?area:area -> ?ctx:ctx -> src:string -> string -> t
   (** Create a transformation object from [src] to [tgt] using strings *)
 
-  val of_crs :  ?area:area -> ?options:string list -> ?ctx:ctx -> src:CRS.t -> CRS.t -> t
+  val of_crs :
+    ?area:area -> ?options:string list -> ?ctx:ctx -> src:CRS.t -> CRS.t -> t
   (** Create a transformation object from [src] to [tgt] using CRS.t values *)
 
   val normalize_for_visualization : ?ctx:ctx -> t -> t
@@ -75,4 +76,3 @@ module Transformation : sig
   (** [transform ?direction trans c] uses [trans] to transform [c]. You can
       optionally use the [direction] argument to invert the transformation. *)
 end
-

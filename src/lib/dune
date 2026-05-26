@@ -1,4 +1,3 @@
-
 (library
  (name proj)
  (public_name proj)

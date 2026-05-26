@@ -18,7 +18,7 @@ module CRS : sig
   val of_string : ?ctx:ctx -> string -> t
   (** Create a CRS object from a general string definition *)
 
-  val of_wkt : ?options:string list -> ?ctx:ctx ->string -> t
+  val of_wkt : ?options:string list -> ?ctx:ctx -> string -> t
   (** Create a CRS object from a WKT string *)
 
   val name : t -> string option
@@ -51,10 +51,11 @@ module Transformation : sig
   type t
   (** A transformation object *)
 
-  val of_string :  ?area:area -> ?ctx:ctx -> src:string -> string -> t
+  val of_string : ?area:area -> ?ctx:ctx -> src:string -> string -> t
   (** Create a transformation object from [src] to [tgt] using strings *)
 
-  val of_crs :  ?area:area -> ?options:string list -> ?ctx:ctx -> src:CRS.t -> CRS.t -> t
+  val of_crs :
+    ?area:area -> ?options:string list -> ?ctx:ctx -> src:CRS.t -> CRS.t -> t
   (** Create a transformation object from [src] to [tgt] using CRS.t values *)
 
   val normalize_for_visualization : ?ctx:ctx -> t -> t

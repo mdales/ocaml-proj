@@ -13,10 +13,9 @@ let check_and_raise_error_with_context ctx =
   the OCaml side of things, just termination. *)
   match Funs.proj_context_errno ctx with
   | 0 -> failwith "This is not an error - NULL was probably allowed"
-  | err -> (
-    let s = Funs.proj_context_errno_string ctx err in
-    failwith s
-  )
+  | err ->
+      let s = Funs.proj_context_errno_string ctx err in
+      failwith s
 
 let finalize_proj_objects o =
   Gc.finalise (fun obj -> ignore (Funs.proj_destroy obj)) o;
@@ -33,61 +32,64 @@ module CRS = struct
   let of_wkt ?(options = []) ?(ctx = null_ctx) wkt =
     let array = CArray.of_list string options in
     let options_ptr = CArray.start array in
-    let cast_options_ptr = Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr in
+    let cast_options_ptr =
+      Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr
+    in
     let extras_null = Ctypes.coerce (ptr void) (ptr (ptr (ptr char))) null in
-    let crs = Funs.proj_create_from_wkt ctx wkt cast_options_ptr extras_null extras_null in
+    let crs =
+      Funs.proj_create_from_wkt ctx wkt cast_options_ptr extras_null extras_null
+    in
     if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
 
-    let name t =
-      ignore(Funs.proj_errno_reset t);
-      let p = Funs.proj_get_name t in
-      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-      if Ctypes.is_null p then (
-        match Funs.proj_errno t with
-        | 0 -> None
-        | err -> failwith (Funs.proj_errno_string err)
-      )
-      else Some (coerce (ptr (const char)) string p)
+  let name t =
+    ignore (Funs.proj_errno_reset t);
+    let p = Funs.proj_get_name t in
+    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+    if Ctypes.is_null p then
+      match Funs.proj_errno t with
+      | 0 -> None
+      | err -> failwith (Funs.proj_errno_string err)
+    else Some (coerce (ptr (const char)) string p)
 
-    let id_code t idx =
-      ignore(Funs.proj_errno_reset t);
-      let p = Funs.proj_get_id_code t idx in
-      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-      if Ctypes.is_null p then (
-        match Funs.proj_errno t with
-        | 0 -> None
-        | err -> failwith (Funs.proj_errno_string err)
-      )
-      else Some (coerce (ptr (const char)) string p)
+  let id_code t idx =
+    ignore (Funs.proj_errno_reset t);
+    let p = Funs.proj_get_id_code t idx in
+    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+    if Ctypes.is_null p then
+      match Funs.proj_errno t with
+      | 0 -> None
+      | err -> failwith (Funs.proj_errno_string err)
+    else Some (coerce (ptr (const char)) string p)
 
-    let id_auth_name t idx =
-      ignore(Funs.proj_errno_reset t);
-      let p = Funs.proj_get_id_auth_name t idx in
-      (* Note that the p here is owned by the CRS object, so we do not need to release it *)
-      if Ctypes.is_null p then (
-        match Funs.proj_errno t with
-        | 0 -> None
-        | err -> failwith (Funs.proj_errno_string err)
-      )
-      else Some (coerce (ptr (const char)) string p)
+  let id_auth_name t idx =
+    ignore (Funs.proj_errno_reset t);
+    let p = Funs.proj_get_id_auth_name t idx in
+    (* Note that the p here is owned by the CRS object, so we do not need to release it *)
+    if Ctypes.is_null p then
+      match Funs.proj_errno t with
+      | 0 -> None
+      | err -> failwith (Funs.proj_errno_string err)
+    else Some (coerce (ptr (const char)) string p)
 
   let identify ?(ctx = null_ctx) t auth_name =
-    let null_options = Ctypes.coerce (ptr void) ((ptr (ptr char))) null in
+    let null_options = Ctypes.coerce (ptr void) (ptr (ptr char)) null in
     let confidences_ptr = allocate (ptr int) (from_voidp int null) in
-    let results = Funs.proj_identify ctx t auth_name null_options confidences_ptr in
+    let results =
+      Funs.proj_identify ctx t auth_name null_options confidences_ptr
+    in
     let count = Funs.proj_list_get_count results in
-    let confidences =  !@ confidences_ptr in
-    let ocaml_res = List.init count (fun idx ->
-      let obj = Funs.proj_list_get ctx results idx in
-      let code = Option.get (id_code obj 0) in
-      let confidence = !@ (confidences +@ idx) in
-      code, confidence
-    ) in
+    let confidences = !@confidences_ptr in
+    let ocaml_res =
+      List.init count (fun idx ->
+          let obj = Funs.proj_list_get ctx results idx in
+          let code = Option.get (id_code obj 0) in
+          let confidence = !@(confidences +@ idx) in
+          (code, confidence))
+    in
     Funs.proj_list_destroy results;
     Funs.proj_int_list_destroy confidences;
     ocaml_res
-
 end
 
 module Coord = struct
@@ -122,8 +124,12 @@ module Transformation = struct
     in
     let array = CArray.of_list string options in
     let options_ptr = CArray.start array in
-    let cast_options_ptr = Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr in
-    let crs = Funs.proj_create_crs_to_crs_from_pj ctx src tgt area cast_options_ptr in
+    let cast_options_ptr =
+      Ctypes.coerce (ptr string) (ptr (const (ptr (const char)))) options_ptr
+    in
+    let crs =
+      Funs.proj_create_crs_to_crs_from_pj ctx src tgt area cast_options_ptr
+    in
     if Ctypes.is_null crs then check_and_raise_error_with_context ctx
     else finalize_proj_objects crs
 
@@ -134,4 +140,3 @@ module Transformation = struct
 end
 
 type area = Types.area structure ptr
-

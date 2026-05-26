@@ -4,7 +4,8 @@ let example () =
   let src = "EPSG:4326" in
   let tgt = "+proj=utm +zone=32 +datum=WGS84" in
   let crs =
-    Proj.Transformation.of_string  ~src tgt |> Proj.Transformation.normalize_for_visualization
+    Proj.Transformation.of_string ~src tgt
+    |> Proj.Transformation.normalize_for_visualization
   in
   let copenhagen = Proj.Coord.make ~x:12. ~y:55. ~z:0. ~t:0. in
   let utm = Proj.Transformation.transform crs copenhagen in

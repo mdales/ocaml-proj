@@ -9,11 +9,8 @@ let ctx () = ()
 module CRS = struct
   type t = Jv.t
 
-  let of_string ?ctx:_ s =
-    Jv.new' proj4 [| Jv.of_string s |]
-
-  let of_wkt ?options:_ ?ctx:_ s =
-    Jv.new' proj4 [| Jv.of_string s |]
+  let of_string ?ctx:_ s = Jv.new' proj4 [| Jv.of_string s |]
+  let of_wkt ?options:_ ?ctx:_ s = Jv.new' proj4 [| Jv.of_string s |]
 
   let name v =
     let oproj = Jv.get v "oProj" in
@@ -31,8 +28,7 @@ module Transformation = struct
   let of_string ?area:_ ?ctx:_ ~src dst =
     Jv.new' proj4 [| Jv.of_string src; Jv.of_string dst |]
 
-  let of_crs ?area:_ ?options:_ ?ctx:_ ~src dst =
-    Jv.new' proj4 [| src; dst |]
+  let of_crs ?area:_ ?options:_ ?ctx:_ ~src dst = Jv.new' proj4 [| src; dst |]
 
   let transform ?(direction = Forward) transform coord1 =
     match direction with
@@ -42,7 +38,6 @@ module Transformation = struct
 end
 
 type area = unit
-
 
 module Coord = struct
   type t = Jv.t
@@ -65,4 +60,3 @@ module Coord = struct
   let x jv = Jv.Float.get jv "x"
   let y jv = Jv.Float.get jv "y"
 end
-
