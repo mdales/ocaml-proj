@@ -1,9 +1,7 @@
 (library
  (name proj_c)
- (public_name proj.c)
- (optional)
- (implements proj)
- (libraries proj ctypes)
+ (public_name proj_c)
+ (libraries ctypes)
  (ctypes
   (external_library_name proj)
   (build_flags_resolver pkg_config)

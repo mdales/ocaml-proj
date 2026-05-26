@@ -1,3 +1,4 @@
+module Proj = Proj_c
 
 let test_invalid_create () =
     let def = "Hello, world!" in

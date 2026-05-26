@@ -1,3 +1,5 @@
+module Proj = Proj_c
+
 let test_create_from_string () =
     ignore(Proj.Transformation.of_string ~src:"epsg:4326" "epsg:3006")
 

@@ -16,15 +16,29 @@
 
 (package
  (name proj)
- (synopsis "Bindings to PROJ4")
+ (synopsis "Platform-agnostic bindings to PROJ4")
  (description "C and Javascript OCaml bindings to the geospatial projection library PROJ4")
  (depends
    ocaml
-   ctypes
-   (brr :with-test)
-   (alcotest :with-test)
- )
+   ctypes)
  (tags
   ("org:geocaml" "geospatial" "projections")))
 
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
+(package
+  (name proj_c)
+  (synopsis "C bindings to PROJ4")
+  (depends
+    ocaml
+    ctypes
+    (alcotest :with-test))
+   (tags ("org:geocaml" "geospatial" "projections")))
+
+(package
+  (name proj_js)
+  (synopsis "Javascript bindings to PROJ4")
+  (depends
+    ocaml
+    brr
+    (alcotest :with-test))
+   (tags ("org:geocaml" "geospatial" "projections")))
+
