@@ -60,4 +60,3 @@ module Coord = struct
   let x jv = Jv.Float.get jv "x"
   let y jv = Jv.Float.get jv "y"
 end
-
